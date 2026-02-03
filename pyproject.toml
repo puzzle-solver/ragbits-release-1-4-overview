@@ -1,0 +1,14 @@
+[project]
+name = "ragbits-example"
+version = "0.1.0"
+description = "Example application using ragbits 1.4"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ragbits-core==1.4.1",
+    "ragbits-agents==1.4.1",
+    "ragbits-chat==1.4.1",
+    "ragbits-cli==1.4.1",
+    "uvicorn>=0.40.0",
+    "python-multipart>=0.0.22",
+]
