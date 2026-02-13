@@ -2,6 +2,7 @@
 Run with:
 `RAGBITS_BASE_URL=http://127.0.0.1:8000 uvicorn main:app --port 8000`
 """
+from fastapi import UploadFile
 from ragbits.chat.api import RagbitsAPI, ChatInterface
 from ragbits.chat.auth.session_store import InMemorySessionStore
 from ragbits.chat.interface.types import ChatContext, TextContent, TextResponse
@@ -13,16 +14,25 @@ from ragbits.chat.auth.backends import OAuth2AuthenticationBackend
 class SimpleStreamingChat(ChatInterface):
     def __init__(self):
         self.llm = LiteLLM(model_name="gpt-5.2")
+        self.files = {}
 
     async def chat(self, message: str, history: ChatFormat, context: ChatContext):
+        files_content = "\n\n".join([f"Title: {title}\n\nContent: {content}" for title, content in self.files.items()])
         conversation_history = [
             {"role": "system", "content": "Answer everything shortly"},
+            {"role": "system", "content": f"Available files:\n\n{files_content}"},
             *history,
             {"role": "user", "content": message}
         ]
         result = self.llm.generate_streaming(conversation_history)
         async for event in result:
             yield self.create_text_response(event)
+
+    async def upload_handler(self, file: UploadFile) -> None:
+        content = await file.read()
+        filename = file.filename
+        self.files[filename] = content
+
 
 auth_backend = OAuth2AuthenticationBackend(
     session_store=InMemorySessionStore(),
