@@ -3,9 +3,10 @@ Run with:
 `RAGBITS_BASE_URL=http://127.0.0.1:8000 uvicorn main:app --port 8000`
 """
 from fastapi import UploadFile
+from ragbits.chat import ErrorResponse, ErrorContent
 from ragbits.chat.api import RagbitsAPI, ChatInterface
 from ragbits.chat.auth.session_store import InMemorySessionStore
-from ragbits.chat.interface.types import ChatContext, TextContent, TextResponse
+from ragbits.chat.interface.types import ChatContext
 from ragbits.core.prompt import ChatFormat
 from ragbits.core.llms import LiteLLM
 from ragbits.chat.auth.oauth2_providers import OAuth2Providers
@@ -17,6 +18,9 @@ class SimpleStreamingChat(ChatInterface):
         self.files = {}
 
     async def chat(self, message: str, history: ChatFormat, context: ChatContext):
+        if "freak" in message.lower():
+            yield ErrorResponse(content=ErrorContent(message="Message rejected. Be nice!"))
+            return
         files_content = "\n\n".join([f"Title: {title}\n\nContent: {content}" for title, content in self.files.items()])
         conversation_history = [
             {"role": "system", "content": "Answer everything shortly"},
