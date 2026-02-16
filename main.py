@@ -11,8 +11,16 @@ from ragbits.core.prompt import ChatFormat
 from ragbits.core.llms import LiteLLM
 from ragbits.chat.auth.oauth2_providers import OAuth2Providers
 from ragbits.chat.auth.backends import OAuth2AuthenticationBackend
+from ragbits.chat.interface.ui_customization import UICustomization, HeaderCustomization, PageMetaCustomization
+
 
 class SimpleStreamingChat(ChatInterface):
+    ui_customization = UICustomization(
+        header=HeaderCustomization(title="My Custom Ragbits App", subtitle="demo for release 1.4"),
+        welcome_message="Ask any question about **React component libraries**",
+        meta=PageMetaCustomization(page_title="Demo")
+    )
+
     def __init__(self):
         self.llm = LiteLLM(model_name="gpt-5.2")
         self.files = {}
@@ -48,6 +56,7 @@ api = RagbitsAPI(
     SimpleStreamingChat,
     cors_origins=["http://localhost:8000", "http://127.0.0.1:8000"],
     auth_backend=auth_backend,
+    theme_path="theme.json"
 )
 
 app = api.app

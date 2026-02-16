@@ -1,6 +1,6 @@
 """
 Run with:
-uvicorn main:app --port 8000`
+uvicorn reference_main:app --port 8000`
 """
 from ragbits.chat.api import RagbitsAPI, ChatInterface
 from ragbits.chat.interface.types import ChatContext, TextContent, TextResponse
